@@ -5,9 +5,6 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.mouse = 'a'
 vim.o.showmode = false
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
 vim.o.breakindent = true
 vim.o.undofile = true
 vim.o.ignorecase = true
@@ -36,6 +33,7 @@ vim.o.smartindent = true
 vim.o.tabstop = 4
 vim.o.expandtab = true
 vim.o.softtabstop = 4
+vim.o.clipboard = 'unnamedplus'
 vim.api.nvim_set_keymap('i', 'jj', '<Esc>', { noremap = true, silent = true })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -285,18 +283,7 @@ require('lazy').setup({
       }
       local capabilities = require('blink.cmp').get_lsp_capabilities()
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
         lua_ls = {
           settings = {
             Lua = {
@@ -354,14 +341,13 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        python = { 'black' },
-        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        python = { 'ruff_format', 'ruff_organize_imports' },
+        javascript = { 'prettier', stop_after_first = true },
         html = { 'prettier', stop_after_first = true },
         htmldjango = { 'prettier', stop_after_first = true },
       },
     },
   },
-
   {
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -405,13 +391,17 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-
   {
     'nvim-tree/nvim-tree.lua',
     config = function()
-      require('nvim-tree').setup {}
+      require('nvim-tree').setup {
+        filters = {
+          enable = false,
+        },
+      }
       vim.keymap.set('n', '<leader>et', ':NvimTreeToggle<CR>', { silent = true, desc = 'Toggle NvimTree' })
       vim.keymap.set('n', '<leader>ef', ':NvimTreeFocus<CR>', { silent = true, desc = 'Focus NvimTree' })
+      vim.keymap.set('n', '<leader>ec', ':NvimTreeCollapse<CR>', { silent = true, desc = 'Recursive Collapse' })
     end,
   },
   {
